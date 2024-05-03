@@ -1,6 +1,7 @@
 import { EVENT_SESSION_RETIRED, ProxyConfiguration, Session, SessionPool } from '@crawlee/core';
 import type { Dictionary } from '@crawlee/utils';
 import { entries, sleep } from '@crawlee/utils';
+import { CookieJar } from 'tough-cookie';
 
 describe('Session - testing session behaviour ', () => {
     let sessionPool: SessionPool;
@@ -253,7 +254,7 @@ describe('Session - testing session behaviour ', () => {
 
         session = new Session({
             sessionPool,
-            cookieJar: {
+            cookieJar: CookieJar.fromJSON(JSON.stringify({
                 cookies: [
                     {
                         'key': 'foo',
@@ -263,7 +264,7 @@ describe('Session - testing session behaviour ', () => {
                         'hostOnly': false,
                     },
                 ],
-            },
+            })),
         });
 
         expect(session.getCookies(url)).to.containSubset([{
@@ -274,13 +275,12 @@ describe('Session - testing session behaviour ', () => {
         expect(session.getCookies(url)).to.deep.equal(session.getCookies('https://example.com'));
     });
 
-
     test('getCookies should work with hostOnly cookies', () => {
         const url = 'https://www.example.com';
 
         session = new Session({
             sessionPool,
-            cookieJar: {
+            cookieJar: CookieJar.fromJSON(JSON.stringify({
                 cookies: [
                     {
                         'key': 'foo',
@@ -290,7 +290,7 @@ describe('Session - testing session behaviour ', () => {
                         'hostOnly': true,
                     },
                 ],
-            },
+            })),
         });
 
         expect(session.getCookies(url)).toHaveLength(0);
